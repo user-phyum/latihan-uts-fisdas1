@@ -2,7 +2,7 @@
 <html lang="id" class="h-full">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Portal Latihan Soal Terproteksi</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -41,15 +41,15 @@
             user-select: none;
         }
 
-        /* Watermark background animation */
+        /* Watermark background pattern */
         .watermark-bg {
             pointer-events: none;
             background-image: repeating-linear-gradient(
                 -45deg,
                 rgba(0, 0, 0, 0.03),
-                rgba(0, 0, 0, 0.03) 100px,
-                transparent 100px,
-                transparent 200px
+                rgba(0, 0, 0, 0.03) 80px,
+                transparent 80px,
+                transparent 160px
             );
         }
 
@@ -57,13 +57,13 @@
             background-image: repeating-linear-gradient(
                 -45deg,
                 rgba(255, 255, 255, 0.02),
-                rgba(255, 255, 255, 0.02) 100px,
-                transparent 100px,
-                transparent 200px
+                rgba(255, 255, 255, 0.02) 80px,
+                transparent 80px,
+                transparent 160px
             );
         }
 
-        /* Custom Scrollbar */
+        /* Custom Scrollbar for smooth reading */
         ::-webkit-scrollbar {
             width: 6px;
             height: 6px;
@@ -72,11 +72,23 @@
             background: rgba(0,0,0,0.05);
         }
         ::-webkit-scrollbar-thumb {
-            background: rgba(0,0,0,0.2);
-            border-radius: 3px;
+            background: rgba(0,0,0,0.25);
+            border-radius: 999px;
         }
         .dark ::-webkit-scrollbar-thumb {
-            background: rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.25);
+        }
+
+        /* Smooth scrolling on mobile devices */
+        .scroll-touch {
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior: contain;
+        }
+
+        /* Dynamic Viewport Height Fix for iOS Safari & Mobile Chrome */
+        .app-height {
+            height: 100vh;
+            height: 100dvh;
         }
 
         /* Print Hiding Rules */
@@ -87,91 +99,105 @@
         }
     </style>
 </head>
-<body class="bg-slate-100 text-slate-800 dark:bg-slate-900 dark:text-slate-100 h-full flex flex-col font-sans transition-colors duration-200 no-select">
+<body class="bg-slate-100 text-slate-800 dark:bg-slate-900 dark:text-slate-100 app-height w-screen flex flex-col font-sans transition-colors duration-200 no-select overflow-hidden">
 
     <!-- Top Navigation Header -->
-    <header class="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 px-4 py-3 sticky top-0 z-30 shadow-sm flex items-center justify-between">
-        <div class="flex items-center gap-3">
-            <div class="p-2 bg-indigo-600 text-white rounded-lg shadow">
-                <i class="fa-solid fa-file-shield text-lg"></i>
+    <header class="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 px-3 py-2 md:px-4 md:py-3 shrink-0 z-30 shadow-sm flex items-center justify-between gap-2">
+        <div class="flex items-center gap-2.5">
+            <div class="p-2 bg-indigo-600 text-white rounded-lg shadow-sm">
+                <i class="fa-solid fa-file-shield text-base md:text-lg"></i>
             </div>
             <div>
-                <h1 class="font-bold text-base md:text-lg text-slate-800 dark:text-white leading-tight">
+                <h1 class="font-bold text-sm md:text-base text-slate-800 dark:text-white leading-tight truncate max-w-[180px] sm:max-w-none">
                     Portal Latihan Soal Terproteksi
                 </h1>
-                <p class="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1">
+                <p class="text-[10px] md:text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1">
                     <span class="inline-block w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
-                    Mode Hanya-Lihat (Proteksi Aktif)
+                    <span>Mode Hanya-Lihat</span>
                 </p>
             </div>
         </div>
 
         <!-- Controls Toolbar -->
-        <div class="flex items-center gap-2 md:gap-3">
+        <div class="flex items-center gap-1.5 md:gap-3">
             <!-- Timer Badge -->
-            <div class="hidden sm:flex items-center bg-slate-100 dark:bg-slate-700/60 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-600">
-                <i class="fa-regular fa-clock text-indigo-600 dark:text-indigo-400 mr-2"></i>
-                <span id="timerDisplay" class="font-mono font-semibold text-sm">00:00:00</span>
-                <button id="toggleTimerBtn" title="Mulai / Jeda Timer" class="ml-2 text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400">
-                    <i class="fa-solid fa-play text-xs" id="timerIcon"></i>
+            <div class="flex items-center bg-slate-100 dark:bg-slate-700/60 px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-600">
+                <i class="fa-regular fa-clock text-indigo-600 dark:text-indigo-400 mr-1.5 text-xs md:text-sm"></i>
+                <span id="timerDisplay" class="font-mono font-semibold text-xs md:text-sm">00:00:00</span>
+                <button id="toggleTimerBtn" title="Mulai / Jeda Timer" class="ml-1.5 text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 p-0.5">
+                    <i class="fa-solid fa-play text-[10px] md:text-xs" id="timerIcon"></i>
                 </button>
             </div>
 
-            <!-- Reading Theme Switcher -->
-            <div class="flex bg-slate-100 dark:bg-slate-700 p-1 rounded-lg border border-slate-200 dark:border-slate-600">
-                <button id="themeLight" onclick="setMode('light')" class="px-2.5 py-1 text-xs rounded-md font-medium text-slate-700 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-600 shadow-sm transition" title="Mode Terang">
+            <!-- Reading Theme Switcher (Hidden on tiny mobile screens to save space) -->
+            <div class="hidden sm:flex bg-slate-100 dark:bg-slate-700 p-1 rounded-lg border border-slate-200 dark:border-slate-600">
+                <button id="themeLight" onclick="setMode('light')" class="px-2 py-1 text-xs rounded-md font-medium text-slate-700 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-600 shadow-sm transition" title="Mode Terang">
                     <i class="fa-solid fa-sun text-amber-500"></i>
                 </button>
-                <button id="themeSepia" onclick="setMode('sepia')" class="px-2.5 py-1 text-xs rounded-md font-medium text-slate-700 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-600 transition" title="Mode Sepia">
+                <button id="themeSepia" onclick="setMode('sepia')" class="px-2 py-1 text-xs rounded-md font-medium text-slate-700 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-600 transition" title="Mode Sepia">
                     <i class="fa-solid fa-book-open text-amber-700"></i>
                 </button>
-                <button id="themeDark" onclick="setMode('dark')" class="px-2.5 py-1 text-xs rounded-md font-medium text-slate-700 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-600 transition" title="Mode Gelap">
+                <button id="themeDark" onclick="setMode('dark')" class="px-2 py-1 text-xs rounded-md font-medium text-slate-700 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-600 transition" title="Mode Gelap">
                     <i class="fa-solid fa-moon text-indigo-400"></i>
                 </button>
             </div>
 
-            <!-- Tools Dropdown Trigger -->
+            <!-- Calculator Button -->
             <button onclick="toggleCalculator()" class="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 transition" title="Kalkulator">
-                <i class="fa-solid fa-calculator"></i>
+                <i class="fa-solid fa-calculator text-xs md:text-sm"></i>
             </button>
 
-            <!-- Focus / Fullscreen Mode -->
-            <button onclick="toggleFocusMode()" id="focusBtn" class="p-2 rounded-lg bg-indigo-50 text-indigo-600 hover:bg-indigo-100 dark:bg-indigo-900/40 dark:text-indigo-300 transition" title="Mode Layar Penuh">
-                <i class="fa-solid fa-expand"></i>
+            <!-- Focus / Fullscreen Mode (Desktop) -->
+            <button onclick="toggleFocusMode()" id="focusBtn" class="hidden md:block p-2 rounded-lg bg-indigo-50 text-indigo-600 hover:bg-indigo-100 dark:bg-indigo-900/40 dark:text-indigo-300 transition" title="Sembunyikan Sidebar">
+                <i class="fa-solid fa-expand text-sm"></i>
             </button>
         </div>
     </header>
 
-    <!-- Main Content Grid -->
-    <main class="flex-1 flex flex-col md:flex-row overflow-hidden relative">
+    <!-- Mobile Screen View Switcher Toolbar (Visible on Mobile `< md`) -->
+    <div class="md:hidden bg-slate-200 dark:bg-slate-800 border-b border-slate-300 dark:border-slate-700 px-2 py-1.5 flex items-center justify-center gap-1 shrink-0 z-20">
+        <button onclick="setMobileView('soal')" id="btnViewSoal" class="flex-1 py-1.5 px-2 text-xs font-semibold rounded-lg bg-indigo-600 text-white transition flex items-center justify-center gap-1.5 shadow-sm">
+            <i class="fa-solid fa-file-pdf"></i>
+            <span>Dokumen Soal</span>
+        </button>
+        <button onclick="setMobileView('split')" id="btnViewSplit" class="py-1.5 px-3 text-xs font-semibold rounded-lg bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 transition flex items-center justify-center gap-1">
+            <i class="fa-solid fa-table-columns"></i>
+            <span>Split</span>
+        </button>
+        <button onclick="setMobileView('lembar')" id="btnViewLembar" class="flex-1 py-1.5 px-2 text-xs font-semibold rounded-lg bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 transition flex items-center justify-center gap-1.5">
+            <i class="fa-solid fa-list-check"></i>
+            <span>Lembar Jawab</span>
+        </button>
+    </div>
+
+    <!-- Main Content Container -->
+    <main class="flex-1 flex flex-col md:flex-row overflow-hidden relative w-full">
         
-        <!-- Document Viewer Section (Left/Main Panel) -->
-        <section id="docPanel" class="flex-1 relative bg-slate-200 dark:bg-slate-950 flex flex-col overflow-hidden">
+        <!-- Document Viewer Section (Left Panel) -->
+        <section id="docPanel" class="w-full md:flex-1 h-full relative bg-slate-900 flex flex-col overflow-hidden transition-all duration-200">
             
-            <!-- Security Overlay Header (Blocks standard Google Drive pop-out header) -->
-            <div class="absolute top-0 left-0 right-0 h-12 bg-slate-900/90 backdrop-blur-md z-20 flex items-center justify-between px-4 text-white text-xs border-b border-slate-700 shadow-lg">
-                <div class="flex items-center gap-2">
-                    <i class="fa-solid fa-lock text-amber-400"></i>
-                    <span class="font-medium">Dokumen Dilindungi (Mode Hanya Baca)</span>
+            <!-- Security Overlay Header -->
+            <div class="absolute top-0 left-0 right-0 h-10 bg-slate-900/90 backdrop-blur-md z-20 flex items-center justify-between px-3 text-white text-[11px] border-b border-slate-800 shadow-sm">
+                <div class="flex items-center gap-1.5 truncate">
+                    <i class="fa-solid fa-lock text-amber-400 text-xs"></i>
+                    <span class="font-medium truncate">Dokumen Terproteksi (Mode Baca)</span>
                 </div>
-                <div class="flex items-center gap-2">
-                    <span class="hidden sm:inline-block text-slate-400">Pencetakan & Pengunduhan Dimatikan</span>
-                    <span class="bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded border border-amber-500/30 font-mono text-[10px]">LATIHAN-SOAL-SECURE</span>
+                <div class="flex items-center gap-2 shrink-0">
+                    <span class="bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded border border-amber-500/30 font-mono text-[9px]">SECURE-VIEW</span>
                 </div>
             </div>
 
-            <!-- Embed Wrapper Container with Offsets -->
-            <div class="relative w-full h-full pt-11 flex-1 overflow-hidden bg-slate-900">
+            <!-- Embed Wrapper Container -->
+            <div class="relative w-full h-full pt-10 flex-1 overflow-hidden bg-slate-950">
                 
                 <!-- Anti-Screen Capture Watermark Dynamic Grid -->
-                <div class="absolute inset-0 z-10 pointer-events-none watermark-bg flex flex-wrap content-between justify-between p-8 opacity-40 select-none">
-                    <p class="text-xs font-mono text-slate-500 transform -rotate-12">HANYA UNTUK DILIHAT DI WEB INI</p>
-                    <p class="text-xs font-mono text-slate-500 transform -rotate-12">DOKUMEN TERPROTEKSI</p>
-                    <p class="text-xs font-mono text-slate-500 transform -rotate-12 hidden sm:block">DILARANG MENGUNDUH / MENCETAK</p>
-                    <p id="watermarkTimestamp" class="text-xs font-mono text-slate-500 transform -rotate-12"></p>
+                <div class="absolute inset-0 z-10 pointer-events-none watermark-bg flex flex-wrap content-between justify-between p-4 md:p-8 opacity-30 select-none">
+                    <p class="text-[10px] md:text-xs font-mono text-slate-400 transform -rotate-12">MODE LIHAT HANYA DI WEB</p>
+                    <p class="text-[10px] md:text-xs font-mono text-slate-400 transform -rotate-12">DOKUMEN TERPROTEKSI</p>
+                    <p id="watermarkTimestamp" class="text-[10px] md:text-xs font-mono text-slate-400 transform -rotate-12 hidden sm:block"></p>
                 </div>
 
-                <!-- Google Drive iFrame Embedded Container -->
+                <!-- Google Drive iFrame Container -->
                 <div class="relative w-full h-full overflow-hidden">
                     <iframe 
                         id="documentIframe"
@@ -182,96 +208,97 @@
                     </iframe>
                 </div>
 
-                <!-- Right Top Corner Masking Box (Directly covers open-in-new-tab icon) -->
-                <div class="absolute top-11 right-0 w-20 h-14 bg-slate-900/95 z-20 pointer-events-auto border-bl border-slate-700 flex items-center justify-center">
-                    <i class="fa-solid fa-shield-halved text-slate-500 text-sm" title="Fitur eksternal dinonaktifkan"></i>
+                <!-- Top Right Masking Box (Directly covers open-in-new-tab icon) -->
+                <div class="absolute top-10 right-0 w-16 md:w-20 h-12 bg-slate-950 z-20 pointer-events-auto border-bl border-slate-800 flex items-center justify-center">
+                    <i class="fa-solid fa-shield-halved text-slate-500 text-xs md:text-sm" title="Fitur eksternal dinonaktifkan"></i>
                 </div>
             </div>
         </section>
 
         <!-- Sidebar Tools Section (Right Panel) -->
-        <aside id="sidebarPanel" class="w-full md:w-80 lg:w-96 bg-white dark:bg-slate-800 border-t md:border-t-0 md:border-l border-slate-200 dark:border-slate-700 flex flex-col h-auto md:h-full z-10 transition-all duration-300">
+        <aside id="sidebarPanel" class="w-full md:w-80 lg:w-96 bg-white dark:bg-slate-800 border-t md:border-t-0 md:border-l border-slate-200 dark:border-slate-700 flex flex-col h-full z-10 transition-all duration-200 shrink-0 hidden md:flex">
             
-            <!-- Sidebar Tab Navigation -->
-            <div class="flex border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80">
-                <button onclick="switchTab('answers')" id="tabBtnAnswers" class="flex-1 py-3 px-3 text-xs md:text-sm font-semibold border-b-2 border-indigo-600 text-indigo-600 dark:text-indigo-400 flex items-center justify-center gap-2">
+            <!-- Sidebar Tab Navigation Header -->
+            <div class="flex border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/90 shrink-0">
+                <button onclick="switchTab('answers')" id="tabBtnAnswers" class="flex-1 py-2.5 px-3 text-xs md:text-sm font-semibold border-b-2 border-indigo-600 text-indigo-600 dark:text-indigo-400 flex items-center justify-center gap-2">
                     <i class="fa-solid fa-list-check"></i>
                     <span>Lembar Jawab</span>
                 </button>
-                <button onclick="switchTab('scratchpad')" id="tabBtnScratchpad" class="flex-1 py-3 px-3 text-xs md:text-sm font-semibold border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 flex items-center justify-center gap-2">
+                <button onclick="switchTab('scratchpad')" id="tabBtnScratchpad" class="flex-1 py-2.5 px-3 text-xs md:text-sm font-semibold border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 flex items-center justify-center gap-2">
                     <i class="fa-solid fa-pen-to-square"></i>
                     <span>Coretan</span>
                 </button>
             </div>
 
-            <!-- Tab Content 1: Digital Answer Sheet -->
-            <div id="tabAnswers" class="flex-1 p-4 overflow-y-auto space-y-4">
+            <!-- Scrollable Tab Content Container -->
+            <div class="flex-1 overflow-y-auto scroll-touch p-3 md:p-4 space-y-3.5">
                 
-                <div class="bg-indigo-50/70 dark:bg-slate-700/60 p-3 rounded-xl border border-indigo-100 dark:border-slate-600 space-y-2">
-                    <div class="flex items-center gap-2 text-indigo-900 dark:text-indigo-300 font-bold text-xs">
-                        <i class="fa-solid fa-id-card"></i>
-                        <span>Identitas Mahasiswa</span>
-                    </div>
-                    <div class="grid grid-cols-1 gap-2">
-                        <div>
-                            <label class="text-[11px] font-semibold text-slate-600 dark:text-slate-300 block mb-0.5">Nama Lengkap <span class="text-rose-500">*</span></label>
-                            <input type="text" id="studentName" placeholder="Contoh: Budi Santoso" class="w-full px-2.5 py-1.5 text-xs rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                <!-- Tab Content 1: Digital Answer Sheet -->
+                <div id="tabAnswers" class="space-y-3.5">
+                    
+                    <!-- Student Identity Input Box -->
+                    <div class="bg-indigo-50/80 dark:bg-slate-700/60 p-3 rounded-xl border border-indigo-100 dark:border-slate-600 space-y-2">
+                        <div class="flex items-center gap-1.5 text-indigo-900 dark:text-indigo-300 font-bold text-xs">
+                            <i class="fa-solid fa-id-card"></i>
+                            <span>Identitas Mahasiswa</span>
                         </div>
-                        <div>
-                            <label class="text-[11px] font-semibold text-slate-600 dark:text-slate-300 block mb-0.5">Nomor Induk Mahasiswa (NIM) <span class="text-rose-500">*</span></label>
-                            <input type="text" id="studentNim" placeholder="Contoh: 210101001" class="w-full px-2.5 py-1.5 text-xs rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                        <div class="grid grid-cols-1 gap-2">
+                            <div>
+                                <label class="text-[11px] font-semibold text-slate-600 dark:text-slate-300 block mb-0.5">Nama Lengkap <span class="text-rose-500">*</span></label>
+                                <input type="text" id="studentName" placeholder="Contoh: Budi Santoso" class="w-full px-2.5 py-1.5 text-xs rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="text-[11px] font-semibold text-slate-600 dark:text-slate-300 block mb-0.5">NIM / Nomor Induk <span class="text-rose-500">*</span></label>
+                                <input type="text" id="studentNim" placeholder="Contoh: 210101001" class="w-full px-2.5 py-1.5 text-xs rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                            </div>
                         </div>
                     </div>
+
+                    <!-- Progress Indicator Bar -->
+                    <div class="bg-slate-50 dark:bg-slate-700/50 p-3 rounded-xl border border-slate-200 dark:border-slate-600 space-y-1.5">
+                        <div class="flex justify-between items-center text-xs font-semibold">
+                            <span class="text-slate-700 dark:text-slate-300">Progres Jawaban</span>
+                            <span id="answeredCount" class="text-indigo-600 dark:text-indigo-400 font-bold">0 / 30 Terjawab</span>
+                        </div>
+                        <div class="w-full bg-slate-200 dark:bg-slate-600 rounded-full h-2 overflow-hidden">
+                            <div id="progressBar" class="bg-indigo-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                        </div>
+                        <div class="flex justify-between items-center text-[11px] text-slate-500 pt-1">
+                            <span>Latihan 30 Soal</span>
+                            <button onclick="resetAnswers()" class="text-rose-500 hover:text-rose-700 font-medium flex items-center gap-1">
+                                <i class="fa-solid fa-rotate-left"></i> Reset
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Dynamic Question Cards List -->
+                    <div id="questionGrid" class="space-y-2.5">
+                        <!-- Dynamic Question Items generated via JS -->
+                    </div>
                 </div>
 
-                <div class="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-700">
-                    <div>
-                        <h2 class="font-bold text-sm text-slate-800 dark:text-white">Lembar Jawaban Digital</h2>
-                        <p class="text-xs text-slate-500">Pilih jawaban Anda saat mengerjakan</p>
+                <!-- Tab Content 2: Scratchpad / Notes -->
+                <div id="tabScratchpad" class="hidden flex-col h-full space-y-2">
+                    <div class="flex items-center justify-between pb-1 border-b border-slate-200 dark:border-slate-700">
+                        <h2 class="font-bold text-xs text-slate-800 dark:text-white">Catatan & Corat-Coret</h2>
+                        <span class="text-[10px] bg-slate-100 dark:bg-slate-700 px-2 py-0.5 rounded text-slate-500">Otomatis Tersimpan</span>
                     </div>
-                    <button onclick="resetAnswers()" class="text-xs text-rose-500 hover:text-rose-700 font-medium flex items-center gap-1">
-                        <i class="fa-solid fa-rotate-left"></i> Reset
-                    </button>
-                </div>
-
-                <!-- Summary Progress Bar -->
-                <div class="bg-slate-50 dark:bg-slate-700/50 p-3 rounded-lg border border-slate-200 dark:border-slate-600">
-                    <div class="flex justify-between text-xs font-medium mb-1">
-                        <span>Progres Pengisian</span>
-                        <span id="answeredCount" class="text-indigo-600 dark:text-indigo-400 font-bold">0 / 30 Terjawab</span>
-                    </div>
-                    <div class="w-full bg-slate-200 dark:bg-slate-600 rounded-full h-2 overflow-hidden">
-                        <div id="progressBar" class="bg-indigo-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
-                    </div>
-                </div>
-
-                <!-- Question Grid List -->
-                <div id="questionGrid" class="space-y-3 pr-1">
-                    <!-- Dynamic Question Items generated via JS -->
+                    <p class="text-[11px] text-slate-500">Coretan rumus, hitungan kasar, atau ringkasan soal:</p>
+                    <textarea 
+                        id="scratchpadText" 
+                        class="w-full h-64 md:h-80 p-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-mono focus:ring-2 focus:ring-indigo-500 focus:outline-none resize-none transition"
+                        placeholder="Tuliskan perhitungannya atau catatan di sini..."></textarea>
                 </div>
             </div>
 
-            <!-- Tab Content 2: Scratchpad / Notes -->
-            <div id="tabScratchpad" class="hidden flex-1 p-4 flex-col h-full">
-                <div class="flex items-center justify-between pb-2 mb-2 border-b border-slate-100 dark:border-slate-700">
-                    <h2 class="font-bold text-sm text-slate-800 dark:text-white">Catatan & Corat-Coret</h2>
-                    <span class="text-[11px] bg-slate-100 dark:bg-slate-700 px-2 py-0.5 rounded text-slate-500">Tersimpan Otomatis</span>
-                </div>
-                <p class="text-xs text-slate-500 mb-2">Gunakan area ini untuk coretan hitungan atau rangkuman latihan soal.</p>
-                <textarea 
-                    id="scratchpadText" 
-                    class="w-full flex-1 p-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-mono focus:ring-2 focus:ring-indigo-500 focus:outline-none resize-none transition"
-                    placeholder="Tuliskan rumus, perhitungannya, atau catatan di sini..."></textarea>
-            </div>
-
-            <!-- Footer Action inside Sidebar -->
-            <div class="p-3 bg-slate-50 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 space-y-2">
-                <button onclick="downloadDocResults()" class="w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-semibold text-xs rounded-xl shadow-md transition flex items-center justify-center gap-2">
+            <!-- Sticky Footer Action inside Sidebar -->
+            <div class="p-3 bg-slate-50 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 space-y-2 shrink-0">
+                <button onclick="downloadDocResults()" class="w-full py-2.5 px-3 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-semibold text-xs rounded-xl shadow-md transition flex items-center justify-center gap-2">
                     <i class="fa-solid fa-file-word"></i>
                     <span>Unduh Hasil Pengerjaan (.doc)</span>
                 </button>
-                <button onclick="showSummaryModal()" class="w-full py-2 px-4 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-semibold text-xs rounded-xl transition flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-list-check"></i>
+                <button onclick="showSummaryModal()" class="w-full py-2 px-3 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-semibold text-xs rounded-xl transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-chart-pie"></i>
                     <span>Lihat Ringkasan Jawaban</span>
                 </button>
             </div>
@@ -280,42 +307,42 @@
 
     <!-- Modal 1: Scientific Calculator Popup -->
     <div id="calcModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
-        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 w-full max-w-xs overflow-hidden transform transition-all">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 w-full max-w-[300px] overflow-hidden transform transition-all">
             <div class="bg-slate-900 text-white p-3 flex items-center justify-between">
-                <div class="flex items-center gap-2 font-semibold text-sm">
+                <div class="flex items-center gap-2 font-semibold text-xs md:text-sm">
                     <i class="fa-solid fa-calculator text-indigo-400"></i>
                     <span>Kalkulator Latihan</span>
                 </div>
-                <button onclick="toggleCalculator()" class="text-slate-400 hover:text-white">
-                    <i class="fa-solid fa-xmark"></i>
+                <button onclick="toggleCalculator()" class="text-slate-400 hover:text-white p-1">
+                    <i class="fa-solid fa-xmark text-sm"></i>
                 </button>
             </div>
             
-            <div class="p-4 space-y-3">
-                <input type="text" id="calcDisplay" readonly class="w-full bg-slate-100 dark:bg-slate-900 text-right text-2xl font-mono p-3 rounded-xl border border-slate-200 dark:border-slate-700 dark:text-white" value="0">
+            <div class="p-3.5 space-y-3">
+                <input type="text" id="calcDisplay" readonly class="w-full bg-slate-100 dark:bg-slate-900 text-right text-xl font-mono p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 dark:text-white" value="0">
                 
-                <div class="grid grid-cols-4 gap-2">
-                    <button onclick="calcClear()" class="col-span-2 bg-rose-100 hover:bg-rose-200 dark:bg-rose-900/40 text-rose-600 dark:text-rose-300 p-3 rounded-xl font-bold text-sm">C</button>
-                    <button onclick="calcOp('/')" class="bg-indigo-50 dark:bg-slate-700 hover:bg-indigo-100 text-indigo-600 dark:text-indigo-300 p-3 rounded-xl font-bold">÷</button>
-                    <button onclick="calcOp('*')" class="bg-indigo-50 dark:bg-slate-700 hover:bg-indigo-100 text-indigo-600 dark:text-indigo-300 p-3 rounded-xl font-bold">×</button>
+                <div class="grid grid-cols-4 gap-1.5">
+                    <button onclick="calcClear()" class="col-span-2 bg-rose-100 hover:bg-rose-200 dark:bg-rose-900/40 text-rose-600 dark:text-rose-300 p-2.5 rounded-xl font-bold text-xs">C</button>
+                    <button onclick="calcOp('/')" class="bg-indigo-50 dark:bg-slate-700 hover:bg-indigo-100 text-indigo-600 dark:text-indigo-300 p-2.5 rounded-xl font-bold text-xs">÷</button>
+                    <button onclick="calcOp('*')" class="bg-indigo-50 dark:bg-slate-700 hover:bg-indigo-100 text-indigo-600 dark:text-indigo-300 p-2.5 rounded-xl font-bold text-xs">×</button>
                     
-                    <button onclick="calcNum('7')" class="bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 p-3 rounded-xl font-semibold text-sm">7</button>
-                    <button onclick="calcNum('8')" class="bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 p-3 rounded-xl font-semibold text-sm">8</button>
-                    <button onclick="calcNum('9')" class="bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 p-3 rounded-xl font-semibold text-sm">9</button>
-                    <button onclick="calcOp('-')" class="bg-indigo-50 dark:bg-slate-700 hover:bg-indigo-100 text-indigo-600 dark:text-indigo-300 p-3 rounded-xl font-bold">-</button>
+                    <button onclick="calcNum('7')" class="bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 p-2.5 rounded-xl font-semibold text-xs">7</button>
+                    <button onclick="calcNum('8')" class="bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 p-2.5 rounded-xl font-semibold text-xs">8</button>
+                    <button onclick="calcNum('9')" class="bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 p-2.5 rounded-xl font-semibold text-xs">9</button>
+                    <button onclick="calcOp('-')" class="bg-indigo-50 dark:bg-slate-700 hover:bg-indigo-100 text-indigo-600 dark:text-indigo-300 p-2.5 rounded-xl font-bold text-xs">-</button>
                     
-                    <button onclick="calcNum('4')" class="bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 p-3 rounded-xl font-semibold text-sm">4</button>
-                    <button onclick="calcNum('5')" class="bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 p-3 rounded-xl font-semibold text-sm">5</button>
-                    <button onclick="calcNum('6')" class="bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 p-3 rounded-xl font-semibold text-sm">6</button>
-                    <button onclick="calcOp('+')" class="bg-indigo-50 dark:bg-slate-700 hover:bg-indigo-100 text-indigo-600 dark:text-indigo-300 p-3 rounded-xl font-bold">+</button>
+                    <button onclick="calcNum('4')" class="bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 p-2.5 rounded-xl font-semibold text-xs">4</button>
+                    <button onclick="calcNum('5')" class="bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 p-2.5 rounded-xl font-semibold text-xs">5</button>
+                    <button onclick="calcNum('6')" class="bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 p-2.5 rounded-xl font-semibold text-xs">6</button>
+                    <button onclick="calcOp('+')" class="bg-indigo-50 dark:bg-slate-700 hover:bg-indigo-100 text-indigo-600 dark:text-indigo-300 p-2.5 rounded-xl font-bold text-xs">+</button>
                     
-                    <button onclick="calcNum('1')" class="bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 p-3 rounded-xl font-semibold text-sm">1</button>
-                    <button onclick="calcNum('2')" class="bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 p-3 rounded-xl font-semibold text-sm">2</button>
-                    <button onclick="calcNum('3')" class="bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 p-3 rounded-xl font-semibold text-sm">3</button>
-                    <button onclick="calcEqual()" class="row-span-2 bg-indigo-600 hover:bg-indigo-700 text-white p-3 rounded-xl font-bold text-lg flex items-center justify-center">=</button>
+                    <button onclick="calcNum('1')" class="bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 p-2.5 rounded-xl font-semibold text-xs">1</button>
+                    <button onclick="calcNum('2')" class="bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 p-2.5 rounded-xl font-semibold text-xs">2</button>
+                    <button onclick="calcNum('3')" class="bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 p-2.5 rounded-xl font-semibold text-xs">3</button>
+                    <button onclick="calcEqual()" class="row-span-2 bg-indigo-600 hover:bg-indigo-700 text-white p-2.5 rounded-xl font-bold text-base flex items-center justify-center">=</button>
                     
-                    <button onclick="calcNum('0')" class="col-span-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 p-3 rounded-xl font-semibold text-sm">0</button>
-                    <button onclick="calcNum('.')" class="bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 p-3 rounded-xl font-semibold text-sm">.</button>
+                    <button onclick="calcNum('0')" class="col-span-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 p-2.5 rounded-xl font-semibold text-xs">0</button>
+                    <button onclick="calcNum('.')" class="bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 p-2.5 rounded-xl font-semibold text-xs">.</button>
                 </div>
             </div>
         </div>
@@ -323,54 +350,55 @@
 
     <!-- Modal 2: Summary Modal -->
     <div id="summaryModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
-        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 w-full max-w-md overflow-hidden p-6 space-y-4">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 w-full max-w-sm overflow-hidden p-5 space-y-4">
             <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-3">
-                <h3 class="font-bold text-lg text-slate-800 dark:text-white flex items-center gap-2">
+                <h3 class="font-bold text-base text-slate-800 dark:text-white flex items-center gap-2">
                     <i class="fa-solid fa-clipboard-check text-indigo-600"></i> Ringkasan Hasil Latihan
                 </h3>
-                <button onclick="closeSummaryModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-white">
-                    <i class="fa-solid fa-xmark text-lg"></i>
+                <button onclick="closeSummaryModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-white p-1">
+                    <i class="fa-solid fa-xmark text-base"></i>
                 </button>
             </div>
 
-            <div class="space-y-3 text-sm">
-                <div class="p-3 bg-indigo-50 dark:bg-indigo-950/40 rounded-xl border border-indigo-100 dark:border-indigo-900 text-xs space-y-1">
+            <div class="space-y-2.5 text-xs">
+                <div class="p-3 bg-indigo-50 dark:bg-indigo-950/40 rounded-xl border border-indigo-100 dark:border-indigo-900 space-y-1">
                     <div class="flex justify-between"><span class="text-slate-500 dark:text-slate-400">Nama:</span> <span id="summaryStudentName" class="font-bold text-slate-800 dark:text-slate-100">-</span></div>
                     <div class="flex justify-between"><span class="text-slate-500 dark:text-slate-400">NIM:</span> <span id="summaryStudentNim" class="font-bold text-slate-800 dark:text-slate-100">-</span></div>
                 </div>
-                <div class="flex justify-between p-3 bg-slate-50 dark:bg-slate-700/50 rounded-xl">
+                <div class="flex justify-between p-2.5 bg-slate-50 dark:bg-slate-700/50 rounded-xl">
                     <span class="text-slate-600 dark:text-slate-300">Total Soal:</span>
                     <span class="font-bold">30 Soal</span>
                 </div>
-                <div class="flex justify-between p-3 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-800 dark:text-emerald-300 rounded-xl">
+                <div class="flex justify-between p-2.5 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-800 dark:text-emerald-300 rounded-xl">
                     <span>Sudah Dijawab:</span>
                     <span id="summaryAnswered" class="font-bold">0</span>
                 </div>
-                <div class="flex justify-between p-3 bg-amber-50 dark:bg-amber-900/20 text-amber-800 dark:text-amber-300 rounded-xl">
+                <div class="flex justify-between p-2.5 bg-amber-50 dark:bg-amber-900/20 text-amber-800 dark:text-amber-300 rounded-xl">
                     <span>Ragu-ragu:</span>
                     <span id="summaryDoubtful" class="font-bold">0</span>
                 </div>
-                <div class="flex justify-between p-3 bg-slate-100 dark:bg-slate-700/80 rounded-xl">
+                <div class="flex justify-between p-2.5 bg-slate-100 dark:bg-slate-700/80 rounded-xl">
                     <span>Waktu Pengerjaan:</span>
                     <span id="summaryTime" class="font-bold">00:00:00</span>
                 </div>
             </div>
+
             <div class="pt-2 flex flex-col sm:flex-row gap-2">
                 <button onclick="downloadDocResults()" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-xl transition flex items-center justify-center gap-2">
                     <i class="fa-solid fa-file-word"></i>
                     <span>Unduh .doc</span>
                 </button>
                 <button onclick="closeSummaryModal()" class="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-semibold text-xs rounded-xl transition">
-                    Kembali Membaca
+                    Kembali
                 </button>
             </div>
         </div>
     </div>
 
     <!-- Security Toast Notification -->
-    <div id="securityToast" class="fixed bottom-5 left-1/2 -translate-x-1/2 bg-slate-900/95 text-white border border-slate-700 px-5 py-3 rounded-full shadow-2xl z-50 flex items-center gap-3 opacity-0 pointer-events-none transition-all duration-300 transform translate-y-4">
-        <i class="fa-solid fa-shield-cat text-amber-400 text-lg"></i>
-        <span id="toastMessage" class="text-xs md:text-sm font-medium">Aksi tidak diizinkan! Dokumen ini dilindungi.</span>
+    <div id="securityToast" class="fixed bottom-5 left-1/2 -translate-x-1/2 bg-slate-900/95 text-white border border-slate-700 px-4 py-2.5 rounded-full shadow-2xl z-50 flex items-center gap-2.5 opacity-0 pointer-events-none transition-all duration-300 transform translate-y-4 max-w-[90vw]">
+        <i class="fa-solid fa-shield-cat text-amber-400 text-sm shrink-0"></i>
+        <span id="toastMessage" class="text-xs font-medium truncate">Aksi tidak diizinkan! Dokumen ini dilindungi.</span>
     </div>
 
     <script>
@@ -380,6 +408,7 @@
         let timerInterval = null;
         let timerSeconds = 0;
         let isTimerRunning = false;
+        let currentMobileView = 'soal'; // 'soal', 'split', 'lembar'
 
         // Initialize App on DOM Load
         window.addEventListener('DOMContentLoaded', () => {
@@ -389,10 +418,71 @@
             updateWatermarkTimestamp();
             loadScratchpad();
             setupIdentityListeners();
+            setupResponsiveLayout();
             
             // Auto update timestamp watermark every minute
             setInterval(updateWatermarkTimestamp, 60000);
+            window.addEventListener('resize', setupResponsiveLayout);
         });
+
+        function setupResponsiveLayout() {
+            const isDesktop = window.innerWidth >= 768; // md breakpoint
+            const docPanel = document.getElementById('docPanel');
+            const sidebarPanel = document.getElementById('sidebarPanel');
+
+            if (isDesktop) {
+                // Desktop Mode (Side-by-side)
+                docPanel.classList.remove('hidden', 'h-1/2', 'h-full');
+                docPanel.classList.add('flex-1', 'h-full');
+
+                sidebarPanel.classList.remove('hidden', 'h-1/2', 'h-full', 'w-full');
+                sidebarPanel.classList.add('flex', 'w-80', 'lg:w-96', 'h-full');
+            } else {
+                // Mobile Mode Layout
+                setMobileView(currentMobileView);
+            }
+        }
+
+        function setMobileView(mode) {
+            currentMobileView = mode;
+            const docPanel = document.getElementById('docPanel');
+            const sidebarPanel = document.getElementById('sidebarPanel');
+
+            const btnSoal = document.getElementById('btnViewSoal');
+            const btnSplit = document.getElementById('btnViewSplit');
+            const btnLembar = document.getElementById('btnViewLembar');
+
+            // Reset mobile button styles
+            const inactiveClass = "py-1.5 px-2 text-xs font-semibold rounded-lg bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 transition flex items-center justify-center gap-1.5";
+            const activeClass = "py-1.5 px-2 text-xs font-semibold rounded-lg bg-indigo-600 text-white transition flex items-center justify-center gap-1.5 shadow-sm";
+
+            btnSoal.className = inactiveClass;
+            btnSplit.className = inactiveClass;
+            btnLembar.className = inactiveClass;
+
+            if (mode === 'soal') {
+                btnSoal.className = activeClass;
+                docPanel.classList.remove('hidden', 'h-1/2');
+                docPanel.classList.add('flex-1', 'h-full');
+                
+                sidebarPanel.classList.remove('flex', 'h-1/2');
+                sidebarPanel.classList.add('hidden', 'w-full');
+            } else if (mode === 'lembar') {
+                btnLembar.className = activeClass;
+                docPanel.classList.remove('flex-1', 'h-1/2', 'h-full');
+                docPanel.classList.add('hidden');
+
+                sidebarPanel.classList.remove('hidden', 'h-1/2');
+                sidebarPanel.classList.add('flex', 'w-full', 'h-full');
+            } else if (mode === 'split') {
+                btnSplit.className = activeClass;
+                docPanel.classList.remove('hidden', 'flex-1', 'h-full');
+                docPanel.classList.add('h-1/2', 'w-full');
+
+                sidebarPanel.classList.remove('hidden', 'h-full');
+                sidebarPanel.classList.add('flex', 'h-1/2', 'w-full');
+            }
+        }
 
         function setupIdentityListeners() {
             const nameInput = document.getElementById('studentName');
@@ -417,6 +507,9 @@
 
             if (!name || !nim) {
                 showSecurityToast('Mohon isi Nama Lengkap dan NIM terlebih dahulu!');
+                if (window.innerWidth < 768 && currentMobileView !== 'lembar') {
+                    setMobileView('lembar');
+                }
                 const nameInput = document.getElementById('studentName');
                 nameInput.scrollIntoView({ behavior: 'smooth' });
                 nameInput.focus();
@@ -614,19 +707,19 @@
 
             for (let i = 1; i <= TOTAL_QUESTIONS; i++) {
                 const qDiv = document.createElement('div');
-                qDiv.className = "p-3 bg-slate-50 dark:bg-slate-700/40 rounded-xl border border-slate-200 dark:border-slate-600/80 transition hover:border-indigo-300";
+                qDiv.className = "p-2.5 bg-slate-50 dark:bg-slate-700/40 rounded-xl border border-slate-200 dark:border-slate-600/80 transition hover:border-indigo-300";
                 
                 let optionsHtml = options.map(opt => `
                     <button 
                         onclick="selectAnswer(${i}, '${opt}')" 
                         id="q_${i}_${opt}"
-                        class="w-7 h-7 rounded-lg font-semibold text-xs transition border border-slate-300 dark:border-slate-500 hover:border-indigo-500 hover:text-indigo-600 flex items-center justify-center bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200">
+                        class="w-9 h-9 sm:w-8 sm:h-8 rounded-lg font-bold text-xs transition border border-slate-300 dark:border-slate-500 hover:border-indigo-500 hover:text-indigo-600 flex items-center justify-center bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 active:scale-95 touch-manipulation">
                         ${opt}
                     </button>
                 `).join('');
 
                 qDiv.innerHTML = `
-                    <div class="flex items-center justify-between mb-2">
+                    <div class="flex items-center justify-between mb-1.5">
                         <span class="font-bold text-xs text-slate-800 dark:text-slate-200">Soal #${i}</span>
                         <button 
                             onclick="toggleDoubtful(${i})" 
@@ -659,9 +752,9 @@
                 const btn = document.getElementById(`q_${qNum}_${opt}`);
                 if (btn) {
                     if (userAnswers[qNum] === opt) {
-                        btn.className = "w-7 h-7 rounded-lg font-bold text-xs transition border-2 border-indigo-600 bg-indigo-600 text-white shadow-md flex items-center justify-center";
+                        btn.className = "w-9 h-9 sm:w-8 sm:h-8 rounded-lg font-bold text-xs transition border-2 border-indigo-600 bg-indigo-600 text-white shadow-md flex items-center justify-center active:scale-95 touch-manipulation";
                     } else {
-                        btn.className = "w-7 h-7 rounded-lg font-semibold text-xs transition border border-slate-300 dark:border-slate-500 hover:border-indigo-500 flex items-center justify-center bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200";
+                        btn.className = "w-9 h-9 sm:w-8 sm:h-8 rounded-lg font-bold text-xs transition border border-slate-300 dark:border-slate-500 hover:border-indigo-500 flex items-center justify-center bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 active:scale-95 touch-manipulation";
                     }
                 }
             });
@@ -704,7 +797,7 @@
                 if (isTimerRunning) {
                     clearInterval(timerInterval);
                     isTimerRunning = false;
-                    icon.className = "fa-solid fa-play text-xs";
+                    icon.className = "fa-solid fa-play text-[10px] md:text-xs";
                 } else {
                     runTimer();
                 }
@@ -716,7 +809,7 @@
         function runTimer() {
             const icon = document.getElementById('timerIcon');
             isTimerRunning = true;
-            icon.className = "fa-solid fa-pause text-xs";
+            icon.className = "fa-solid fa-pause text-[10px] md:text-xs";
 
             timerInterval = setInterval(() => {
                 timerSeconds++;
@@ -750,14 +843,14 @@
                 tabAnswers.classList.remove('hidden');
                 tabScratchpad.classList.add('hidden');
                 tabScratchpad.classList.remove('flex');
-                btnAnswers.className = "flex-1 py-3 px-3 text-xs md:text-sm font-semibold border-b-2 border-indigo-600 text-indigo-600 dark:text-indigo-400 flex items-center justify-center gap-2";
-                btnScratchpad.className = "flex-1 py-3 px-3 text-xs md:text-sm font-semibold border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 flex items-center justify-center gap-2";
+                btnAnswers.className = "flex-1 py-2.5 px-3 text-xs md:text-sm font-semibold border-b-2 border-indigo-600 text-indigo-600 dark:text-indigo-400 flex items-center justify-center gap-2";
+                btnScratchpad.className = "flex-1 py-2.5 px-3 text-xs md:text-sm font-semibold border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 flex items-center justify-center gap-2";
             } else {
                 tabAnswers.classList.add('hidden');
                 tabScratchpad.classList.remove('hidden');
                 tabScratchpad.classList.add('flex');
-                btnScratchpad.className = "flex-1 py-3 px-3 text-xs md:text-sm font-semibold border-b-2 border-indigo-600 text-indigo-600 dark:text-indigo-400 flex items-center justify-center gap-2";
-                btnAnswers.className = "flex-1 py-3 px-3 text-xs md:text-sm font-semibold border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 flex items-center justify-center gap-2";
+                btnScratchpad.className = "flex-1 py-2.5 px-3 text-xs md:text-sm font-semibold border-b-2 border-indigo-600 text-indigo-600 dark:text-indigo-400 flex items-center justify-center gap-2";
+                btnAnswers.className = "flex-1 py-2.5 px-3 text-xs md:text-sm font-semibold border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 flex items-center justify-center gap-2";
             }
         }
 
