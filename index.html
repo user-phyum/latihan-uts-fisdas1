@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="id" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Latihan Soal Terproteksi</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        sepia: {
+                            50: '#fbf0d9',
+                            100: '#f7e7c4',
+                            800: '#433422',
+                            900: '#2d2216',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Disable text selection */
+        .no-select {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        /* Watermark background animation */
+        .watermark-bg {
+            pointer-events: none;
+            background-image: repeating-linear-gradient(
+                -45deg,
+                rgba(0, 0, 0, 0.03),
+                rgba(0, 0, 0, 0.03) 100px,
+                transparent 100px,
+                transparent 200px
+            );
+        }
+
+        .dark .watermark-bg {
+            background-image: repeating-linear-gradient(
+                -45deg,
+                rgba(255, 255, 255, 0.02),
+                rgba(255, 255, 255, 0.02) 100px,
+                transparent 100px,
+                transparent 200px
+            );
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.05);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0,0,0,0.2);
+            border-radius: 3px;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.2);
+        }
+
+        /* Print Hiding Rules */
+        @media print {
+            body {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 dark:bg-slate-900 dark:text-slate-100 h-full flex flex-col font-sans transition-colors duration-200 no-select">
+
+    <!-- Top Navigation Header -->
+    <header class="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 px-4 py-3 sticky top-0 z-30 shadow-sm flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <div class="p-2 bg-indigo-600 text-white rounded-lg shadow">
+                <i class="fa-solid fa-file-shield text-lg"></i>
+            </div>
+            <div>
+                <h1 class="font-bold text-base md:text-lg text-slate-800 dark:text-white leading-tight">
+                    Portal Latihan Soal Terproteksi
+                </h1>
+                <p class="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1">
+                    <span class="inline-block w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
+                    Mode Hanya-Lihat (Proteksi Aktif)
+                </p>
+            </div>
+        </div>
+
+        <!-- Controls Toolbar -->
+        <div class="flex items-center gap-2 md:gap-3">
+            <!-- Timer Badge -->
+            <div class="hidden sm:flex items-center bg-slate-100 dark:bg-slate-700/60 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-600">
+                <i class="fa-regular fa-clock text-indigo-600 dark:text-indigo-400 mr-2"></i>
+                <span id="timerDisplay" class="font-mono font-semibold text-sm">00:00:00</span>
+                <button id="toggleTimerBtn" title="Mulai / Jeda Timer" class="ml-2 text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400">
+                    <i class="fa-solid fa-play text-xs" id="timerIcon"></i>
+                </button>
+            </div>
+
+            <!-- Reading Theme Switcher -->
+            <div class="flex bg-slate-100 dark:bg-slate-700 p-1 rounded-lg border border-slate-200 dark:border-slate-600">
+                <button id="themeLight" onclick="setMode('light')" class="px-2.5 py-1 text-xs rounded-md font-medium text-slate-700 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-600 shadow-sm transition" title="Mode Terang">
+                    <i class="fa-solid fa-sun text-amber-500"></i>
+                </button>
+                <button id="themeSepia" onclick="setMode('sepia')" class="px-2.5 py-1 text-xs rounded-md font-medium text-slate-700 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-600 transition" title="Mode Sepia">
+                    <i class="fa-solid fa-book-open text-amber-700"></i>
+                </button>
+                <button id="themeDark" onclick="setMode('dark')" class="px-2.5 py-1 text-xs rounded-md font-medium text-slate-700 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-600 transition" title="Mode Gelap">
+                    <i class="fa-solid fa-moon text-indigo-400"></i>
+                </button>
+            </div>
+
+            <!-- Tools Dropdown Trigger -->
+            <button onclick="toggleCalculator()" class="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 transition" title="Kalkulator">
+                <i class="fa-solid fa-calculator"></i>
+            </button>
+
+            <!-- Focus / Fullscreen Mode -->
+            <button onclick="toggleFocusMode()" id="focusBtn" class="p-2 rounded-lg bg-indigo-50 text-indigo-600 hover:bg-indigo-100 dark:bg-indigo-900/40 dark:text-indigo-300 transition" title="Mode Layar Penuh">
+                <i class="fa-solid fa-expand"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content Grid -->
+    <main class="flex-1 flex flex-col md:flex-row overflow-hidden relative">
+        
+        <!-- Document Viewer Section (Left/Main Panel) -->
+        <section id="docPanel" class="flex-1 relative bg-slate-200 dark:bg-slate-950 flex flex-col overflow-hidden">
+            
+            <!-- Security Overlay Header (Blocks standard Google Drive pop-out header) -->
+            <div class="absolute top-0 left-0 right-0 h-12 bg-slate-900/90 backdrop-blur-md z-20 flex items-center justify-between px-4 text-white text-xs border-b border-slate-700 shadow-lg">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-lock text-amber-400"></i>
+                    <span class="font-medium">Dokumen Dilindungi (Mode Hanya Baca)</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="hidden sm:inline-block text-slate-400">Pencetakan & Pengunduhan Dimatikan</span>
+                    <span class="bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded border border-amber-500/30 font-mono text-[10px]">LATIHAN-SOAL-SECURE</span>
+                </div>
+            </div>
+
+            <!-- Embed Wrapper Container with Offsets -->
+            <div class="relative w-full h-full pt-11 flex-1 overflow-hidden bg-slate-900">
+                
+                <!-- Anti-Screen Capture Watermark Dynamic Grid -->
+                <div class="absolute inset-0 z-10 pointer-events-none watermark-bg flex flex-wrap content-between justify-between p-8 opacity-40 select-none">
+                    <p class="text-xs font-mono text-slate-500 transform -rotate-12">HANYA UNTUK DILIHAT DI WEB INI</p>
+                    <p class="text-xs font-mono text-slate-500 transform -rotate-12">DOKUMEN TERPROTEKSI</p>
+                    <p class="text-xs font-mono text-slate-500 transform -rotate-12 hidden sm:block">DILARANG MENGUNDUH / MENCETAK</p>
+                    <p id="watermarkTimestamp" class="text-xs font-mono text-slate-500 transform -rotate-12"></p>
+                </div>
+
+                <!-- Google Drive iFrame Embedded Container -->
+                <div class="relative w-full h-full overflow-hidden">
+                    <iframe 
+                        id="documentIframe"
+                        src="https://drive.google.com/file/d/120kZJ6J3Et3v71uwH12JgCmasqq0ZSrq/preview" 
+                        class="w-full h-full border-0"
+                        allow="autoplay"
+                        title="Embedded Practice Document">
+                    </iframe>
+                </div>
+
+                <!-- Right Top Corner Masking Box (Directly covers open-in-new-tab icon) -->
+                <div class="absolute top-11 right-0 w-20 h-14 bg-slate-900/95 z-20 pointer-events-auto border-bl border-slate-700 flex items-center justify-center">
+                    <i class="fa-solid fa-shield-halved text-slate-500 text-sm" title="Fitur eksternal dinonaktifkan"></i>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sidebar Tools Section (Right Panel) -->
+        <aside id="sidebarPanel" class="w-full md:w-80 lg:w-96 bg-white dark:bg-slate-800 border-t md:border-t-0 md:border-l border-slate-200 dark:border-slate-700 flex flex-col h-auto md:h-full z-10 transition-all duration-300">
+            
+            <!-- Sidebar Tab Navigation -->
+            <div class="flex border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80">
+                <button onclick="switchTab('answers')" id="tabBtnAnswers" class="flex-1 py-3 px-3 text-xs md:text-sm font-semibold border-b-2 border-indigo-600 text-indigo-600 dark:text-indigo-400 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-list-check"></i>
+                    <span>Lembar Jawab</span>
+                </button>
+                <button onclick="switchTab('scratchpad')" id="tabBtnScratchpad" class="flex-1 py-3 px-3 text-xs md:text-sm font-semibold border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                    <span>Coretan</span>
+                </button>
+            </div>
+
+            <!-- Tab Content 1: Digital Answer Sheet -->
+            <div id="tabAnswers" class="flex-1 p-4 overflow-y-auto space-y-4">
+                
+                <div class="bg-indigo-50/70 dark:bg-slate-700/60 p-3 rounded-xl border border-indigo-100 dark:border-slate-600 space-y-2">
+                    <div class="flex items-center gap-2 text-indigo-900 dark:text-indigo-300 font-bold text-xs">
+                        <i class="fa-solid fa-id-card"></i>
+                        <span>Identitas Mahasiswa</span>
+                    </div>
+                    <div class="grid grid-cols-1 gap-2">
+                        <div>
+                            <label class="text-[11px] font-semibold text-slate-600 dark:text-slate-300 block mb-0.5">Nama Lengkap <span class="text-rose-500">*</span></label>
+                            <input type="text" id="studentName" placeholder="Contoh: Budi Santoso" class="w-full px-2.5 py-1.5 text-xs rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="text-[11px] font-semibold text-slate-600 dark:text-slate-300 block mb-0.5">Nomor Induk Mahasiswa (NIM) <span class="text-rose-500">*</span></label>
+                            <input type="text" id="studentNim" placeholder="Contoh: 210101001" class="w-full px-2.5 py-1.5 text-xs rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-700">
+                    <div>
+                        <h2 class="font-bold text-sm text-slate-800 dark:text-white">Lembar Jawaban Digital</h2>
+                        <p class="text-xs text-slate-500">Pilih jawaban Anda saat mengerjakan</p>
+                    </div>
+                    <button onclick="resetAnswers()" class="text-xs text-rose-500 hover:text-rose-700 font-medium flex items-center gap-1">
+                        <i class="fa-solid fa-rotate-left"></i> Reset
+                    </button>
+                </div>
+
+                <!-- Summary Progress Bar -->
+                <div class="bg-slate-50 dark:bg-slate-700/50 p-3 rounded-lg border border-slate-200 dark:border-slate-600">
+                    <div class="flex justify-between text-xs font-medium mb-1">
+                        <span>Progres Pengisian</span>
+                        <span id="answeredCount" class="text-indigo-600 dark:text-indigo-400 font-bold">0 / 30 Terjawab</span>
+                    </div>
+                    <div class="w-full bg-slate-200 dark:bg-slate-600 rounded-full h-2 overflow-hidden">
+                        <div id="progressBar" class="bg-indigo-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- Question Grid List -->
+                <div id="questionGrid" class="space-y-3 pr-1">
+                    <!-- Dynamic Question Items generated via JS -->
+                </div>
+            </div>
+
+            <!-- Tab Content 2: Scratchpad / Notes -->
+            <div id="tabScratchpad" class="hidden flex-1 p-4 flex-col h-full">
+                <div class="flex items-center justify-between pb-2 mb-2 border-b border-slate-100 dark:border-slate-700">
+                    <h2 class="font-bold text-sm text-slate-800 dark:text-white">Catatan & Corat-Coret</h2>
+                    <span class="text-[11px] bg-slate-100 dark:bg-slate-700 px-2 py-0.5 rounded text-slate-500">Tersimpan Otomatis</span>
+                </div>
+                <p class="text-xs text-slate-500 mb-2">Gunakan area ini untuk coretan hitungan atau rangkuman latihan soal.</p>
+                <textarea 
+                    id="scratchpadText" 
+                    class="w-full flex-1 p-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-mono focus:ring-2 focus:ring-indigo-500 focus:outline-none resize-none transition"
+                    placeholder="Tuliskan rumus, perhitungannya, atau catatan di sini..."></textarea>
+            </div>
+
+            <!-- Footer Action inside Sidebar -->
+            <div class="p-3 bg-slate-50 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 space-y-2">
+                <button onclick="downloadDocResults()" class="w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-semibold text-xs rounded-xl shadow-md transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-file-word"></i>
+                    <span>Unduh Hasil Pengerjaan (.doc)</span>
+                </button>
+                <button onclick="showSummaryModal()" class="w-full py-2 px-4 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-semibold text-xs rounded-xl transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-list-check"></i>
+                    <span>Lihat Ringkasan Jawaban</span>
+                </button>
+            </div>
+        </aside>
+    </main>
+
+    <!-- Modal 1: Scientific Calculator Popup -->
+    <div id="calcModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 w-full max-w-xs overflow-hidden transform transition-all">
+            <div class="bg-slate-900 text-white p-3 flex items-center justify-between">
+                <div class="flex items-center gap-2 font-semibold text-sm">
+                    <i class="fa-solid fa-calculator text-indigo-400"></i>
+                    <span>Kalkulator Latihan</span>
+                </div>
+                <button onclick="toggleCalculator()" class="text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            
+            <div class="p-4 space-y-3">
+                <input type="text" id="calcDisplay" readonly class="w-full bg-slate-100 dark:bg-slate-900 text-right text-2xl font-mono p-3 rounded-xl border border-slate-200 dark:border-slate-700 dark:text-white" value="0">
+                
+                <div class="grid grid-cols-4 gap-2">
+                    <button onclick="calcClear()" class="col-span-2 bg-rose-100 hover:bg-rose-200 dark:bg-rose-900/40 text-rose-600 dark:text-rose-300 p-3 rounded-xl font-bold text-sm">C</button>
+                    <button onclick="calcOp('/')" class="bg-indigo-50 dark:bg-slate-700 hover:bg-indigo-100 text-indigo-600 dark:text-indigo-300 p-3 rounded-xl font-bold">÷</button>
+                    <button onclick="calcOp('*')" class="bg-indigo-50 dark:bg-slate-700 hover:bg-indigo-100 text-indigo-600 dark:text-indigo-300 p-3 rounded-xl font-bold">×</button>
+                    
+                    <button onclick="calcNum('7')" class="bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 p-3 rounded-xl font-semibold text-sm">7</button>
+                    <button onclick="calcNum('8')" class="bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 p-3 rounded-xl font-semibold text-sm">8</button>
+                    <button onclick="calcNum('9')" class="bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 p-3 rounded-xl font-semibold text-sm">9</button>
+                    <button onclick="calcOp('-')" class="bg-indigo-50 dark:bg-slate-700 hover:bg-indigo-100 text-indigo-600 dark:text-indigo-300 p-3 rounded-xl font-bold">-</button>
+                    
+                    <button onclick="calcNum('4')" class="bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 p-3 rounded-xl font-semibold text-sm">4</button>
+                    <button onclick="calcNum('5')" class="bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 p-3 rounded-xl font-semibold text-sm">5</button>
+                    <button onclick="calcNum('6')" class="bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 p-3 rounded-xl font-semibold text-sm">6</button>
+                    <button onclick="calcOp('+')" class="bg-indigo-50 dark:bg-slate-700 hover:bg-indigo-100 text-indigo-600 dark:text-indigo-300 p-3 rounded-xl font-bold">+</button>
+                    
+                    <button onclick="calcNum('1')" class="bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 p-3 rounded-xl font-semibold text-sm">1</button>
+                    <button onclick="calcNum('2')" class="bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 p-3 rounded-xl font-semibold text-sm">2</button>
+                    <button onclick="calcNum('3')" class="bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 p-3 rounded-xl font-semibold text-sm">3</button>
+                    <button onclick="calcEqual()" class="row-span-2 bg-indigo-600 hover:bg-indigo-700 text-white p-3 rounded-xl font-bold text-lg flex items-center justify-center">=</button>
+                    
+                    <button onclick="calcNum('0')" class="col-span-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 p-3 rounded-xl font-semibold text-sm">0</button>
+                    <button onclick="calcNum('.')" class="bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 p-3 rounded-xl font-semibold text-sm">.</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 2: Summary Modal -->
+    <div id="summaryModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 w-full max-w-md overflow-hidden p-6 space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-3">
+                <h3 class="font-bold text-lg text-slate-800 dark:text-white flex items-center gap-2">
+                    <i class="fa-solid fa-clipboard-check text-indigo-600"></i> Ringkasan Hasil Latihan
+                </h3>
+                <button onclick="closeSummaryModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-white">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <div class="space-y-3 text-sm">
+                <div class="p-3 bg-indigo-50 dark:bg-indigo-950/40 rounded-xl border border-indigo-100 dark:border-indigo-900 text-xs space-y-1">
+                    <div class="flex justify-between"><span class="text-slate-500 dark:text-slate-400">Nama:</span> <span id="summaryStudentName" class="font-bold text-slate-800 dark:text-slate-100">-</span></div>
+                    <div class="flex justify-between"><span class="text-slate-500 dark:text-slate-400">NIM:</span> <span id="summaryStudentNim" class="font-bold text-slate-800 dark:text-slate-100">-</span></div>
+                </div>
+                <div class="flex justify-between p-3 bg-slate-50 dark:bg-slate-700/50 rounded-xl">
+                    <span class="text-slate-600 dark:text-slate-300">Total Soal:</span>
+                    <span class="font-bold">30 Soal</span>
+                </div>
+                <div class="flex justify-between p-3 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-800 dark:text-emerald-300 rounded-xl">
+                    <span>Sudah Dijawab:</span>
+                    <span id="summaryAnswered" class="font-bold">0</span>
+                </div>
+                <div class="flex justify-between p-3 bg-amber-50 dark:bg-amber-900/20 text-amber-800 dark:text-amber-300 rounded-xl">
+                    <span>Ragu-ragu:</span>
+                    <span id="summaryDoubtful" class="font-bold">0</span>
+                </div>
+                <div class="flex justify-between p-3 bg-slate-100 dark:bg-slate-700/80 rounded-xl">
+                    <span>Waktu Pengerjaan:</span>
+                    <span id="summaryTime" class="font-bold">00:00:00</span>
+                </div>
+            </div>
+            <div class="pt-2 flex flex-col sm:flex-row gap-2">
+                <button onclick="downloadDocResults()" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-xl transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-file-word"></i>
+                    <span>Unduh .doc</span>
+                </button>
+                <button onclick="closeSummaryModal()" class="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-semibold text-xs rounded-xl transition">
+                    Kembali Membaca
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Security Toast Notification -->
+    <div id="securityToast" class="fixed bottom-5 left-1/2 -translate-x-1/2 bg-slate-900/95 text-white border border-slate-700 px-5 py-3 rounded-full shadow-2xl z-50 flex items-center gap-3 opacity-0 pointer-events-none transition-all duration-300 transform translate-y-4">
+        <i class="fa-solid fa-shield-cat text-amber-400 text-lg"></i>
+        <span id="toastMessage" class="text-xs md:text-sm font-medium">Aksi tidak diizinkan! Dokumen ini dilindungi.</span>
+    </div>
+
+    <script>
+        const TOTAL_QUESTIONS = 30;
+        let userAnswers = {};
+        let doubtfulState = {};
+        let timerInterval = null;
+        let timerSeconds = 0;
+        let isTimerRunning = false;
+
+        // Initialize App on DOM Load
+        window.addEventListener('DOMContentLoaded', () => {
+            generateQuestionGrid();
+            startTimer();
+            setupSecurityListeners();
+            updateWatermarkTimestamp();
+            loadScratchpad();
+            setupIdentityListeners();
+            
+            // Auto update timestamp watermark every minute
+            setInterval(updateWatermarkTimestamp, 60000);
+        });
+
+        function setupIdentityListeners() {
+            const nameInput = document.getElementById('studentName');
+            const nimInput = document.getElementById('studentNim');
+
+            // Load saved identity if present
+            nameInput.value = localStorage.getItem('latihan_student_name') || '';
+            nimInput.value = localStorage.getItem('latihan_student_nim') || '';
+
+            nameInput.addEventListener('input', () => {
+                localStorage.setItem('latihan_student_name', nameInput.value);
+            });
+
+            nimInput.addEventListener('input', () => {
+                localStorage.setItem('latihan_student_nim', nimInput.value);
+            });
+        }
+
+        function downloadDocResults() {
+            const name = document.getElementById('studentName').value.trim();
+            const nim = document.getElementById('studentNim').value.trim();
+
+            if (!name || !nim) {
+                showSecurityToast('Mohon isi Nama Lengkap dan NIM terlebih dahulu!');
+                const nameInput = document.getElementById('studentName');
+                nameInput.scrollIntoView({ behavior: 'smooth' });
+                nameInput.focus();
+                return;
+            }
+
+            const answeredCount = Object.keys(userAnswers).length;
+            const timeSpent = document.getElementById('timerDisplay').innerText;
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('id-ID', {
+                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
+            });
+
+            let tableRows = '';
+            for (let i = 1; i <= TOTAL_QUESTIONS; i++) {
+                const answer = userAnswers[i] || '-';
+                const isDoubt = doubtfulState[i] ? '<span style="color:#d97706; font-weight:bold;">[RAGU]</span>' : '<span style="color:#16a34a; font-weight:bold;">[YAKIN]</span>';
+                const statusText = userAnswers[i] ? isDoubt : '<span style="color:#dc2626;">[BELUM DIJAWAB]</span>';
+                
+                tableRows += `
+                    <tr>
+                        <td style="text-align:center; padding: 8px; border: 1px solid #cbd5e1;">Soal #${i}</td>
+                        <td style="text-align:center; font-weight: bold; font-size: 14px; padding: 8px; border: 1px solid #cbd5e1; background-color: #f8fafc;">${answer}</td>
+                        <td style="text-align:center; padding: 8px; border: 1px solid #cbd5e1;">${statusText}</td>
+                    </tr>
+                `;
+            }
+
+            const scratchpad = document.getElementById('scratchpadText').value.trim();
+            const scratchpadSection = scratchpad ? `
+                <h3 style="color: #1e3a8a; margin-top: 25px; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px;">Catatan & Coretan Mahasiswa</h3>
+                <div style="background-color: #f8fafc; border: 1px solid #cbd5e1; padding: 12px; border-radius: 6px; font-family: monospace; font-size: 10.5pt; white-space: pre-wrap; color: #334155;">${scratchpad.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</div>
+            ` : '';
+
+            const docContent = `
+                <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+                <head>
+                    <meta charset="utf-8">
+                    <title>Laporan Hasil Latihan Soal - ${name}</title>
+                    <style>
+                        body { font-family: 'Calibri', 'Segoe UI', Arial, sans-serif; color: #1e293b; line-height: 1.5; padding: 20px; }
+                        .header { text-align: center; border-bottom: 3px double #1e3a8a; padding-bottom: 12px; margin-bottom: 20px; }
+                        .header h1 { color: #1e3a8a; font-size: 18pt; margin: 0; text-transform: uppercase; letter-spacing: 0.5px; }
+                        .header p { color: #64748b; font-size: 10pt; margin: 5px 0 0 0; font-style: italic; }
+                        .identity-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; background-color: #f1f5f9; }
+                        .identity-table td { padding: 8px 12px; border: 1px solid #cbd5e1; font-size: 11pt; }
+                        .identity-label { font-weight: bold; width: 28%; color: #334155; background-color: #e2e8f0; }
+                        .summary-box { background-color: #e0f2fe; border-left: 5px solid #0284c7; padding: 10px 15px; margin-bottom: 20px; font-size: 11pt; color: #0369a1; }
+                        table.results { width: 100%; border-collapse: collapse; margin-top: 10px; }
+                        table.results th { background-color: #1e3a8a; color: #ffffff; padding: 10px; border: 1px solid #1e3a8a; font-size: 11pt; text-align: center; }
+                        .footer { margin-top: 35px; text-align: right; font-size: 9.5pt; color: #64748b; border-top: 1px solid #e2e8f0; padding-top: 10px; }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h1>LEMBAR HASIL LATIHAN SOAL ONLINE</h1>
+                        <p>Dokumen Laporan Pengerjaan Latihan Soal Terproteksi</p>
+                    </div>
+
+                    <table class="identity-table">
+                        <tr>
+                            <td class="identity-label">Nama Mahasiswa</td>
+                            <td><strong>${name}</strong></td>
+                        </tr>
+                        <tr>
+                            <td class="identity-label">NIM (Nomor Induk)</td>
+                            <td><strong>${nim}</strong></td>
+                        </tr>
+                        <tr>
+                            <td class="identity-label">Tanggal Pengerjaan</td>
+                            <td>${dateStr}</td>
+                        </tr>
+                        <tr>
+                            <td class="identity-label">Durasi Waktu Terpakai</td>
+                            <td>${timeSpent}</td>
+                        </tr>
+                    </table>
+
+                    <div class="summary-box">
+                        <strong>Status Pengerjaan:</strong> Terjawab ${answeredCount} dari ${TOTAL_QUESTIONS} Soal.
+                    </div>
+
+                    <h3 style="color: #1e3a8a; margin-bottom: 8px; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px;">Rincian Jawaban Soal</h3>
+                    <table class="results">
+                        <thead>
+                            <tr>
+                                <th style="width: 25%;">Nomor Soal</th>
+                                <th style="width: 35%;">Jawaban Dipilih</th>
+                                <th style="width: 40%;">Status Jawaban</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${tableRows}
+                        </tbody>
+                    </table>
+
+                    ${scratchpadSection}
+
+                    <div class="footer">
+                        <p>Dokumen ini dibuat otomatis oleh Portal Latihan Soal Terproteksi pada ${dateStr}</p>
+                    </div>
+                </body>
+                </html>
+            `;
+
+            const blob = new Blob(['\ufeff' + docContent], { type: 'application/msword;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            const safeName = name.replace(/[^a-zA-Z0-9]/g, '_');
+            const safeNim = nim.replace(/[^a-zA-Z0-9]/g, '_');
+            a.download = `Hasil_Latihan_Soal_${safeNim}_${safeName}.doc`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            showSecurityToast('File .doc hasil pengerjaan berhasil diunduh!');
+        }
+
+        function setupSecurityListeners() {
+            // Prevent Right-Click Context Menu
+            document.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                showSecurityToast('Klik kanan dinonaktifkan untuk melindungi dokumen.');
+            });
+
+            // Prevent Copy, Cut, Paste
+            document.addEventListener('copy', (e) => {
+                e.preventDefault();
+                showSecurityToast('Menyalin isi dokumen tidak diizinkan.');
+            });
+            document.addEventListener('cut', (e) => e.preventDefault());
+
+            // Prevent Keyboard Shortcuts (Ctrl+P, Ctrl+S, Ctrl+U, F12, Cmd+P, etc.)
+            document.addEventListener('keydown', (e) => {
+                const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+                const ctrlOrCmd = isMac ? e.metaKey : e.ctrlKey;
+
+                // Print: Ctrl+P / Cmd+P
+                if (ctrlOrCmd && (e.key === 'p' || e.key === 'P')) {
+                    e.preventDefault();
+                    showSecurityToast('Mencetak dokumen dinonaktifkan!');
+                    return false;
+                }
+
+                // Save: Ctrl+S / Cmd+S
+                if (ctrlOrCmd && (e.key === 's' || e.key === 'S')) {
+                    e.preventDefault();
+                    showSecurityToast('Menyimpan file dinonaktifkan!');
+                    return false;
+                }
+
+                // View Source: Ctrl+U
+                if (ctrlOrCmd && (e.key === 'u' || e.key === 'U')) {
+                    e.preventDefault();
+                    showSecurityToast('Akses source code dilarang!');
+                    return false;
+                }
+
+                // Developer Tools: F12 or Ctrl+Shift+I
+                if (e.key === 'F12' || (ctrlOrCmd && e.shiftKey && (e.key === 'I' || e.key === 'i'))) {
+                    e.preventDefault();
+                    showSecurityToast('Inspeksi halaman dinonaktifkan!');
+                    return false;
+                }
+            });
+        }
+
+        function showSecurityToast(msg) {
+            const toast = document.getElementById('securityToast');
+            const toastMsg = document.getElementById('toastMessage');
+            toastMsg.innerText = msg;
+            
+            toast.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-4');
+            toast.classList.add('opacity-100', 'translate-y-0');
+
+            setTimeout(() => {
+                toast.classList.remove('opacity-100', 'translate-y-0');
+                toast.classList.add('opacity-0', 'pointer-events-none', 'translate-y-4');
+            }, 3000);
+        }
+
+        function updateWatermarkTimestamp() {
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+            document.getElementById('watermarkTimestamp').innerText = `SESI WEB: ${dateStr}`;
+        }
+
+        function generateQuestionGrid() {
+            const container = document.getElementById('questionGrid');
+            container.innerHTML = '';
+
+            const options = ['A', 'B', 'C', 'D', 'E'];
+
+            for (let i = 1; i <= TOTAL_QUESTIONS; i++) {
+                const qDiv = document.createElement('div');
+                qDiv.className = "p-3 bg-slate-50 dark:bg-slate-700/40 rounded-xl border border-slate-200 dark:border-slate-600/80 transition hover:border-indigo-300";
+                
+                let optionsHtml = options.map(opt => `
+                    <button 
+                        onclick="selectAnswer(${i}, '${opt}')" 
+                        id="q_${i}_${opt}"
+                        class="w-7 h-7 rounded-lg font-semibold text-xs transition border border-slate-300 dark:border-slate-500 hover:border-indigo-500 hover:text-indigo-600 flex items-center justify-center bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200">
+                        ${opt}
+                    </button>
+                `).join('');
+
+                qDiv.innerHTML = `
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="font-bold text-xs text-slate-800 dark:text-slate-200">Soal #${i}</span>
+                        <button 
+                            onclick="toggleDoubtful(${i})" 
+                            id="doubt_${i}" 
+                            class="text-[11px] px-2 py-0.5 rounded-md border border-slate-200 dark:border-slate-600 text-slate-400 hover:text-amber-500 transition flex items-center gap-1">
+                            <i class="fa-solid fa-flag text-[10px]"></i>
+                            <span>Ragu</span>
+                        </button>
+                    </div>
+                    <div class="flex items-center gap-1.5 justify-between">
+                        ${optionsHtml}
+                    </div>
+                `;
+                container.appendChild(qDiv);
+            }
+        }
+
+        function selectAnswer(qNum, option) {
+            const options = ['A', 'B', 'C', 'D', 'E'];
+            
+            // Toggle answer off if selected again
+            if (userAnswers[qNum] === option) {
+                delete userAnswers[qNum];
+            } else {
+                userAnswers[qNum] = option;
+            }
+
+            // Update option styles
+            options.forEach(opt => {
+                const btn = document.getElementById(`q_${qNum}_${opt}`);
+                if (btn) {
+                    if (userAnswers[qNum] === opt) {
+                        btn.className = "w-7 h-7 rounded-lg font-bold text-xs transition border-2 border-indigo-600 bg-indigo-600 text-white shadow-md flex items-center justify-center";
+                    } else {
+                        btn.className = "w-7 h-7 rounded-lg font-semibold text-xs transition border border-slate-300 dark:border-slate-500 hover:border-indigo-500 flex items-center justify-center bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200";
+                    }
+                }
+            });
+
+            updateProgress();
+        }
+
+        function toggleDoubtful(qNum) {
+            doubtfulState[qNum] = !doubtfulState[qNum];
+            const btn = document.getElementById(`doubt_${qNum}`);
+            if (btn) {
+                if (doubtfulState[qNum]) {
+                    btn.className = "text-[11px] px-2 py-0.5 rounded-md bg-amber-500 text-white font-semibold flex items-center gap-1 transition shadow-sm";
+                } else {
+                    btn.className = "text-[11px] px-2 py-0.5 rounded-md border border-slate-200 dark:border-slate-600 text-slate-400 hover:text-amber-500 transition flex items-center gap-1";
+                }
+            }
+        }
+
+        function updateProgress() {
+            const answeredCount = Object.keys(userAnswers).length;
+            const percent = Math.round((answeredCount / TOTAL_QUESTIONS) * 100);
+            
+            document.getElementById('answeredCount').innerText = `${answeredCount} / ${TOTAL_QUESTIONS} Terjawab`;
+            document.getElementById('progressBar').style.width = `${percent}%`;
+        }
+
+        function resetAnswers() {
+            userAnswers = {};
+            doubtfulState = {};
+            generateQuestionGrid();
+            updateProgress();
+        }
+
+        function startTimer() {
+            const toggleBtn = document.getElementById('toggleTimerBtn');
+            const icon = document.getElementById('timerIcon');
+
+            toggleBtn.onclick = () => {
+                if (isTimerRunning) {
+                    clearInterval(timerInterval);
+                    isTimerRunning = false;
+                    icon.className = "fa-solid fa-play text-xs";
+                } else {
+                    runTimer();
+                }
+            };
+
+            runTimer();
+        }
+
+        function runTimer() {
+            const icon = document.getElementById('timerIcon');
+            isTimerRunning = true;
+            icon.className = "fa-solid fa-pause text-xs";
+
+            timerInterval = setInterval(() => {
+                timerSeconds++;
+                const hrs = String(Math.floor(timerSeconds / 3600)).padStart(2, '0');
+                const mins = String(Math.floor((timerSeconds % 3600) / 60)).padStart(2, '0');
+                const secs = String(timerSeconds % 60).padStart(2, '0');
+                
+                document.getElementById('timerDisplay').innerText = `${hrs}:${mins}:${secs}`;
+            }, 1000);
+        }
+
+        function setMode(mode) {
+            const html = document.documentElement;
+            html.classList.remove('dark');
+            document.body.classList.remove('bg-sepia-50', 'text-sepia-900');
+
+            if (mode === 'dark') {
+                html.classList.add('dark');
+            } else if (mode === 'sepia') {
+                document.body.classList.add('bg-sepia-50', 'text-sepia-900');
+            }
+        }
+
+        function switchTab(tab) {
+            const btnAnswers = document.getElementById('tabBtnAnswers');
+            const btnScratchpad = document.getElementById('tabBtnScratchpad');
+            const tabAnswers = document.getElementById('tabAnswers');
+            const tabScratchpad = document.getElementById('tabScratchpad');
+
+            if (tab === 'answers') {
+                tabAnswers.classList.remove('hidden');
+                tabScratchpad.classList.add('hidden');
+                tabScratchpad.classList.remove('flex');
+                btnAnswers.className = "flex-1 py-3 px-3 text-xs md:text-sm font-semibold border-b-2 border-indigo-600 text-indigo-600 dark:text-indigo-400 flex items-center justify-center gap-2";
+                btnScratchpad.className = "flex-1 py-3 px-3 text-xs md:text-sm font-semibold border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 flex items-center justify-center gap-2";
+            } else {
+                tabAnswers.classList.add('hidden');
+                tabScratchpad.classList.remove('hidden');
+                tabScratchpad.classList.add('flex');
+                btnScratchpad.className = "flex-1 py-3 px-3 text-xs md:text-sm font-semibold border-b-2 border-indigo-600 text-indigo-600 dark:text-indigo-400 flex items-center justify-center gap-2";
+                btnAnswers.className = "flex-1 py-3 px-3 text-xs md:text-sm font-semibold border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 flex items-center justify-center gap-2";
+            }
+        }
+
+        function loadScratchpad() {
+            const area = document.getElementById('scratchpadText');
+            area.value = localStorage.getItem('latihan_scratchpad_content') || '';
+            area.addEventListener('input', () => {
+                localStorage.setItem('latihan_scratchpad_content', area.value);
+            });
+        }
+
+        let calcVal = "0";
+        function toggleCalculator() {
+            const modal = document.getElementById('calcModal');
+            modal.classList.toggle('hidden');
+        }
+
+        function calcNum(num) {
+            if (calcVal === "0") {
+                calcVal = num;
+            } else {
+                calcVal += num;
+            }
+            document.getElementById('calcDisplay').value = calcVal;
+        }
+
+        function calcOp(op) {
+            calcVal += op;
+            document.getElementById('calcDisplay').value = calcVal;
+        }
+
+        function calcClear() {
+            calcVal = "0";
+            document.getElementById('calcDisplay').value = calcVal;
+        }
+
+        function calcEqual() {
+            try {
+                calcVal = String(eval(calcVal));
+            } catch (err) {
+                calcVal = "Error";
+            }
+            document.getElementById('calcDisplay').value = calcVal;
+        }
+
+        function toggleFocusMode() {
+            const sidebar = document.getElementById('sidebarPanel');
+            sidebar.classList.toggle('hidden');
+        }
+
+        function showSummaryModal() {
+            const answered = Object.keys(userAnswers).length;
+            let doubtfulCount = 0;
+            Object.values(doubtfulState).forEach(val => { if (val) doubtfulCount++; });
+
+            const name = document.getElementById('studentName').value.trim() || 'Belum Diisi';
+            const nim = document.getElementById('studentNim').value.trim() || 'Belum Diisi';
+
+            document.getElementById('summaryStudentName').innerText = name;
+            document.getElementById('summaryStudentNim').innerText = nim;
+            document.getElementById('summaryAnswered').innerText = `${answered} / ${TOTAL_QUESTIONS} Soal`;
+            document.getElementById('summaryDoubtful').innerText = `${doubtfulCount} Soal`;
+            document.getElementById('summaryTime').innerText = document.getElementById('timerDisplay').innerText;
+
+            document.getElementById('summaryModal').classList.remove('hidden');
+        }
+
+        function closeSummaryModal() {
+            document.getElementById('summaryModal').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
