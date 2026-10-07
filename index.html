@@ -149,7 +149,7 @@
 
             <!-- Focus / Fullscreen Mode (Desktop) -->
             <button onclick="toggleFocusMode()" id="focusBtn" class="hidden md:block p-2 rounded-lg bg-indigo-50 text-indigo-600 hover:bg-indigo-100 dark:bg-indigo-900/40 dark:text-indigo-300 transition" title="Sembunyikan Sidebar">
-                <i class="fa-solid fa-expand text-sm"></i>
+                <i id="focusIcon" class="fa-solid fa-expand text-sm"></i>
             </button>
         </div>
     </header>
@@ -180,9 +180,25 @@
             <div class="absolute top-0 left-0 right-0 h-10 bg-slate-900/90 backdrop-blur-md z-20 flex items-center justify-between px-3 text-white text-[11px] border-b border-slate-800 shadow-sm">
                 <div class="flex items-center gap-1.5 truncate">
                     <i class="fa-solid fa-lock text-amber-400 text-xs"></i>
-                    <span class="font-medium truncate">Dokumen Terproteksi (Mode Baca)</span>
+                    <span class="font-medium truncate hidden sm:inline">Dokumen Terproteksi (Mode Baca)</span>
                 </div>
-                <div class="flex items-center gap-2 shrink-0">
+                
+                <!-- Zoom Controls Toolbar -->
+                <div class="flex items-center gap-0.5 bg-slate-800/80 rounded-md border border-slate-700 px-1 py-0.5 shrink-0 shadow-inner">
+                    <button onclick="zoomDoc(-0.1)" class="w-6 h-6 flex items-center justify-center hover:bg-slate-700 rounded text-slate-300 hover:text-white transition" title="Perkecil (-10%)">
+                        <i class="fa-solid fa-minus text-[10px]"></i>
+                    </button>
+                    <span id="zoomDisplay" class="w-10 text-center font-mono text-[10px] font-semibold text-slate-200">100%</span>
+                    <button onclick="zoomDoc(0.1)" class="w-6 h-6 flex items-center justify-center hover:bg-slate-700 rounded text-slate-300 hover:text-white transition" title="Perbesar (+10%)">
+                        <i class="fa-solid fa-plus text-[10px]"></i>
+                    </button>
+                    <div class="w-px h-3 bg-slate-700 mx-1"></div>
+                    <button onclick="resetZoom()" class="w-6 h-6 flex items-center justify-center hover:bg-slate-700 rounded text-slate-300 hover:text-white transition" title="Reset Zoom (100%)">
+                        <i class="fa-solid fa-rotate-left text-[10px]"></i>
+                    </button>
+                </div>
+
+                <div class="flex items-center gap-2 shrink-0 hidden md:flex">
                     <span class="bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded border border-amber-500/30 font-mono text-[9px]">SECURE-VIEW</span>
                 </div>
             </div>
@@ -197,19 +213,21 @@
                     <p id="watermarkTimestamp" class="text-[10px] md:text-xs font-mono text-slate-400 transform -rotate-12 hidden sm:block"></p>
                 </div>
 
-                <!-- Google Drive iFrame Container -->
-                <div class="relative w-full h-full overflow-hidden">
-                    <iframe 
-                        id="documentIframe"
-                        src="https://drive.google.com/file/d/120kZJ6J3Et3v71uwH12JgCmasqq0ZSrq/preview" 
-                        class="w-full h-full border-0"
-                        allow="autoplay"
-                        title="Embedded Practice Document">
-                    </iframe>
+                <!-- Google Drive iFrame Container (Wrap for Zooming & Scrolling) -->
+                <div class="relative w-full h-full overflow-auto scroll-touch" id="docScrollArea">
+                    <div id="zoomContainer" class="relative transition-all duration-300 origin-top-left" style="width: 100%; height: 100%;">
+                        <iframe 
+                            id="documentIframe"
+                            src="https://drive.google.com/file/d/120kZJ6J3Et3v71uwH12JgCmasqq0ZSrq/preview" 
+                            class="w-full h-full border-0"
+                            allow="autoplay"
+                            title="Embedded Practice Document">
+                        </iframe>
+                    </div>
                 </div>
 
                 <!-- Top Right Masking Box (Directly covers open-in-new-tab icon) -->
-                <div class="absolute top-10 right-0 w-16 md:w-20 h-12 bg-slate-950 z-20 pointer-events-auto border-bl border-slate-800 flex items-center justify-center">
+                <div class="absolute top-10 right-0 w-16 md:w-20 h-12 bg-slate-950 z-20 pointer-events-auto border-b border-l border-slate-800 flex items-center justify-center">
                     <i class="fa-solid fa-shield-halved text-slate-500 text-xs md:text-sm" title="Fitur eksternal dinonaktifkan"></i>
                 </div>
             </div>
@@ -409,6 +427,7 @@
         let timerSeconds = 0;
         let isTimerRunning = false;
         let currentMobileView = 'soal'; // 'soal', 'split', 'lembar'
+        let currentZoom = 1.0; // Menyimpan status skala dokumen (zoom)
 
         // Initialize App on DOM Load
         window.addEventListener('DOMContentLoaded', () => {
@@ -868,37 +887,67 @@
             modal.classList.toggle('hidden');
         }
 
-        function calcNum(num) {
-            if (calcVal === "0") {
-                calcVal = num;
-            } else {
-                calcVal += num;
-            }
-            document.getElementById('calcDisplay').value = calcVal;
-        }
-
-        function calcOp(op) {
-            calcVal += op;
-            document.getElementById('calcDisplay').value = calcVal;
-        }
-
-        function calcClear() {
-            calcVal = "0";
-            document.getElementById('calcDisplay').value = calcVal;
-        }
-
-        function calcEqual() {
-            try {
-                calcVal = String(eval(calcVal));
-            } catch (err) {
-                calcVal = "Error";
-            }
-            document.getElementById('calcDisplay').value = calcVal;
-        }
-
+        let isFocusMode = false;
         function toggleFocusMode() {
             const sidebar = document.getElementById('sidebarPanel');
-            sidebar.classList.toggle('hidden');
+            const icon = document.getElementById('focusIcon');
+            const btn = document.getElementById('focusBtn');
+            
+            isFocusMode = !isFocusMode;
+            
+            if (isFocusMode) {
+                // Hide sidebar
+                sidebar.classList.remove('md:flex');
+                sidebar.classList.add('md:hidden');
+                
+                // Update button styles for focus mode
+                btn.title = "Tampilkan Sidebar";
+                icon.classList.remove('fa-expand');
+                icon.classList.add('fa-compress');
+                btn.classList.add('bg-amber-100', 'text-amber-700', 'dark:bg-amber-900/40', 'dark:text-amber-400');
+                btn.classList.remove('bg-indigo-50', 'text-indigo-600', 'dark:bg-indigo-900/40', 'dark:text-indigo-300');
+            } else {
+                // Show sidebar
+                sidebar.classList.remove('md:hidden');
+                sidebar.classList.add('md:flex');
+                
+                // Revert button styles
+                btn.title = "Sembunyikan Sidebar";
+                icon.classList.remove('fa-compress');
+                icon.classList.add('fa-expand');
+                btn.classList.remove('bg-amber-100', 'text-amber-700', 'dark:bg-amber-900/40', 'dark:text-amber-400');
+                btn.classList.add('bg-indigo-50', 'text-indigo-600', 'dark:bg-indigo-900/40', 'dark:text-indigo-300');
+            }
+        }
+
+        /* --- Fungsi Pengontrol Zoom Dokumen --- */
+        function zoomDoc(step) {
+            currentZoom += step;
+            // Batasi skala zoom minimum 50% dan maksimum 300%
+            if (currentZoom < 0.5) currentZoom = 0.5;
+            if (currentZoom > 3.0) currentZoom = 3.0;
+            
+            // Atasi masalah presisi desimal javascript (misal: 1.100000001)
+            currentZoom = Math.round(currentZoom * 10) / 10;
+            applyZoom();
+        }
+
+        function resetZoom() {
+            currentZoom = 1.0;
+            applyZoom();
+        }
+
+        function applyZoom() {
+            const container = document.getElementById('zoomContainer');
+            const display = document.getElementById('zoomDisplay');
+            
+            // Tampilkan ke layar teks presentase
+            display.innerText = `${Math.round(currentZoom * 100)}%`;
+            
+            // Ubah dimensi layout kontainer agar dokumen ter-stretch
+            // docScrollArea akan mendeteksi kelebihan dimensi dan otomatis membuat scrollbar
+            container.style.width = `${currentZoom * 100}%`;
+            container.style.height = `${currentZoom * 100}%`;
         }
 
         function showSummaryModal() {
