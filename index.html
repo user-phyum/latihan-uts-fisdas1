@@ -216,19 +216,18 @@
                 <!-- Google Drive iFrame Container (Wrap for Zooming & Scrolling) -->
                 <div class="relative w-full h-full overflow-auto scroll-touch" id="docScrollArea">
                     <div id="zoomContainer" class="relative transition-all duration-300 origin-top-left" style="width: 100%; height: 100%;">
-                        <iframe 
-                            id="documentIframe"
-                            src="https://drive.google.com/file/d/120kZJ6J3Et3v71uwH12JgCmasqq0ZSrq/preview" 
-                            class="w-full h-full border-0"
-                            allow="autoplay"
-                            title="Embedded Practice Document">
-                        </iframe>
+                        <!-- Container to crop Google Drive's default Toolbar (approx 56px) which hides the pop-out button -->
+                        <div class="w-full h-full overflow-hidden">
+                            <iframe 
+                                id="documentIframe"
+                                src="https://drive.google.com/file/d/120kZJ6J3Et3v71uwH12JgCmasqq0ZSrq/preview" 
+                                class="w-full border-0"
+                                style="height: calc(100% + 56px); margin-top: -56px;"
+                                allow="autoplay"
+                                title="Embedded Practice Document">
+                            </iframe>
+                        </div>
                     </div>
-                </div>
-
-                <!-- Top Right Masking Box (Directly covers open-in-new-tab icon) -->
-                <div class="absolute top-10 right-0 w-16 md:w-20 h-12 bg-slate-950 z-20 pointer-events-auto border-b border-l border-slate-800 flex items-center justify-center">
-                    <i class="fa-solid fa-shield-halved text-slate-500 text-xs md:text-sm" title="Fitur eksternal dinonaktifkan"></i>
                 </div>
             </div>
         </section>
